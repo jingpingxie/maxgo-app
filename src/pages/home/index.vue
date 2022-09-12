@@ -16,7 +16,7 @@ const homeBg = computed<CSSProperties>(() => ({
 
 const toLogin = () => {
   uni.navigateTo({
-    url: '/pages/login/index'
+    url: '/pages/auth/login/login'
   })
 }
 const handleChangeBg = () => {

@@ -30,6 +30,30 @@
       "style": {
         "navigationBarTitleText": "登录"
       }
+    },
+    {
+      "path": "pages/auth/login/login",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/auth/register/register",
+      "style": {
+        "navigationBarTitleText": "注册",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
+    },
+    {
+      "path": "pages/auth/forget/forget",
+      "style": {
+        "navigationBarTitleText": "忘记密码",
+        "navigationStyle": "custom",
+        "enablePullDownRefresh": false
+      }
     }
   ],
   "globalStyle": {
@@ -48,19 +72,19 @@
         "pagePath": "pages/home/index",
         "text": "首页",
         "iconPath": "static/images/tabbar/home1.png",
-				"selectedIconPath": "static/images/tabbar/home2.png"
+        "selectedIconPath": "static/images/tabbar/home2.png"
       },
       {
         "pagePath": "pages/pinia/index",
         "text": "Pinia",
         "iconPath": "static/images/tabbar/pinia1.png",
-				"selectedIconPath": "static/images/tabbar/pinia2.png"
+        "selectedIconPath": "static/images/tabbar/pinia2.png"
       },
       {
         "pagePath": "pages/charts/index",
         "text": "图表",
         "iconPath": "static/images/tabbar/charts1.png",
-				"selectedIconPath": "static/images/tabbar/charts2.png"
+        "selectedIconPath": "static/images/tabbar/charts2.png"
       }
     ]
   }
