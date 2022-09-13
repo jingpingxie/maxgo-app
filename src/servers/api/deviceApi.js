@@ -1,5 +1,5 @@
-import Request from '../request.js'
-import Module from '../module.js'
+import Request from '../request.ts'
+import Module from '../module.ts'
 
 const Interface = {
   /**

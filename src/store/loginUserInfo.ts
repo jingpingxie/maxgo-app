@@ -12,12 +12,12 @@ export const useLoginUserInfo = defineStore('loginUserInfo', {
       photo: '',
       time: '',
       roles: [],
-      authBtnList: [],
+      authBtnList: []
     },
     token: uni.getStorageSync('token'),
     cid: '',
     certKey: '',
-    publicKey: '',
+    publicKey: ''
   }),
   getters: {
     clientId(state): string {
@@ -27,7 +27,7 @@ export const useLoginUserInfo = defineStore('loginUserInfo', {
       state.cid = Math.random().toString(36).substring(2) + Date.now().toString(36)
       uni.setStorageSync('client_id', state.cid)
       return state.cid
-    },
+    }
   },
   actions: {
     async setUserInfos(userInfos: ILogin) {
@@ -47,6 +47,6 @@ export const useLoginUserInfo = defineStore('loginUserInfo', {
     setPublicKey(publicKey: string) {
       this.publicKey = publicKey
       uni.setStorageSync('public_key', publicKey)
-    },
-  },
+    }
+  }
 })

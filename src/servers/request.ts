@@ -1,9 +1,11 @@
-import { Toast } from '../utils/toast.js'
-import { THeaderOption, TPatamOption } from './request-type'
+import { Toast } from '@/utils/toast'
+import { XHeaderOption, XParamOption } from './request-type'
+import { useLoginUserInfo } from '@/store/loginUserInfo'
+import { cryptUtil } from '@/utils/cryptUtil'
 
-const baseURL = ''
-const headerOption: THeaderOption = {
-  contentType: 'application/json;charset=utf-8'
+const baseURL = 'http://localhost:9090'
+let headerOption: XHeaderOption = {
+  'content-type': 'application/json;charset=utf-8'
 }
 
 /**
@@ -15,9 +17,9 @@ const headerOption: THeaderOption = {
 const getParamDispose = (url: string, param: TAnyObject) => {
   const keyArr = Object.keys(param)
   const valueArr = Object.values(param)
-  const leng = keyArr.length
+  const length = keyArr.length
   let newUrl = url
-  for (let i = 0; i < leng; i++) {
+  for (let i = 0; i < length; i++) {
     if (i === 0) {
       newUrl += `?${keyArr[i]}=${valueArr[i]}`
     } else {
@@ -30,68 +32,80 @@ const getParamDispose = (url: string, param: TAnyObject) => {
 const Request = {
   /**
    * Post请求
-   * @param {String} module 接口模块
    * @param {String} api 接口地址
    * @param {Object} param 参数
    * @param {Object} option 配置
    * @return {Promise}
    */
-  post: (
-    module: string,
-    api: string,
+  post: (api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) => {
+    const url = `${baseURL}${api}`
+    return Request.baseRequest(url, 'POST', param, option)
+  },
+  put: (api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) => {
+    const url = `${baseURL}${api}`
+    return Request.baseRequest(url, 'PUT', param, option)
+  },
+  delete: (api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) => {
+    const url = `${baseURL}${api}`
+    return Request.baseRequest(url, 'DELETE', param, option)
+  },
+  /**
+   * Get请求
+   * @param {String} api 接口地址
+   * @param {Object} param 参数
+   * @param {Object} option 配置
+   * @return {Promise}
+   */
+  get: (api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) => {
+    const url = getParamDispose(`${baseURL}${api}`, param)
+    return Request.baseRequest(url, 'GET', {}, option)
+  },
+  getEncryptedAuthText: () => {
+    const requestJsonData = {
+      cid: useLoginUserInfo().clientId,
+      ctime: Date.parse(new Date().toString()) / 1000
+    }
+    const requestJsonText = JSON.stringify(requestJsonData)
+    cryptUtil.setPublicKey(useLoginUserInfo().publicKey)
+    return cryptUtil.rsa_encrypt(requestJsonText)
+  },
+  getHeaderAuthOption: (headerOption: XHeaderOption) => {
+    headerOption.authorization = uni.getStorageSync('token')
+    headerOption.cert_key = uni.getStorageSync('cert_key')
+    return headerOption
+  },
+  setAuthInfo: (header: XHeaderOption) => {
+    const storeLoginUserInfo = useLoginUserInfo()
+    if (header.authorization) {
+      storeLoginUserInfo.setToken(header.authorization)
+    }
+    if (header.cert_key) {
+      storeLoginUserInfo.setCertKey(header.cert_key)
+    }
+    if (header.public_key) {
+      storeLoginUserInfo.setPublicKey(header.public_key)
+    }
+  },
+  baseRequest: (
+    url: string,
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE',
     param: TAnyObject = {},
-    option: TPatamOption = { isToken: true }
+    option: XParamOption = { isAuth: true }
   ) => {
-    const url = `${baseURL}${module}${api}`
-    if (option.isToken) headerOption.token = ''
+    if (option.isAuth) {
+      headerOption = Request.getHeaderAuthOption(headerOption)
+      param['encrypt'] = Request.getEncryptedAuthText()
+    }
     return new Promise((resolve, reject) => {
       uni.request({
         url,
         data: { ...param },
-        method: 'POST',
+        method: method,
         timeout: 30000,
         header: headerOption,
         success: res => {
           if (res.statusCode === 200) {
-            reject(res)
-          } else {
-            reject(res)
-          }
-        },
-        fail: res => {
-          reject(res)
-          setTimeout(() => {
-            Toast('服务器内部错误，请稍后重试 !')
-          }, 0)
-        }
-      })
-    })
-  },
-  /**
-   * Get请求
-   * @param {String} module 接口模块
-   * @param {String} api 接口地址
-   * @param {Object} param 参数
-   * @param {Object} option 配置
-   * @return {Promise}
-   */
-  get: (
-    module: string,
-    api: string,
-    param: TAnyObject = {},
-    option: TPatamOption = { isToken: true }
-  ) => {
-    const url = getParamDispose(`${baseURL}${module}${api}`, param)
-    if (option.isToken) headerOption.token = ''
-    return new Promise((resolve, reject) => {
-      uni.request({
-        url,
-        data: {},
-        method: 'GET',
-        timeout: 30000,
-        header: headerOption,
-        success: res => {
-          if (res.statusCode === 200) {
+            Request.setAuthInfo(res.header)
             resolve(res.data)
           } else {
             reject(res)

@@ -48,11 +48,13 @@ class CryptUtil {
    * @param randomKey n位16进制随机字符串
    */
   aes_encrypt(params: object, randomKey: string): string {
-    const src = CryptoJS.enc.Utf8.parse(typeof params === 'object' ? JSON.stringify(params) : params)
+    const src = CryptoJS.enc.Utf8.parse(
+      typeof params === 'object' ? JSON.stringify(params) : params
+    )
     const key = CryptoJS.enc.Utf8.parse(randomKey)
     const encryptedParams = CryptoJS.AES.encrypt(src, key, {
       mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
+      padding: CryptoJS.pad.Pkcs7
     })
     return encryptedParams.toString()
   }
@@ -66,7 +68,7 @@ class CryptUtil {
     const key = CryptoJS.enc.Utf8.parse(randomKey)
     const decryptParams = CryptoJS.AES.decrypt(params, key, {
       mode: CryptoJS.mode.ECB,
-      padding: CryptoJS.pad.Pkcs7,
+      padding: CryptoJS.pad.Pkcs7
     })
     return CryptoJS.enc.Utf8.stringify(decryptParams).toString()
   }
@@ -98,7 +100,7 @@ class CryptUtil {
     const encrypted = this.rsa_decrypt(randomKey) || ''
     return {
       requestData,
-      encrypted,
+      encrypted
     }
   }
 
