@@ -1,13 +1,16 @@
-import { Toast } from '@/utils/toast'
+import { Toast, Alert } from '@/utils/toast'
 import { XHeaderOption, XParamOption } from './request-type'
 import { useLoginUserInfo } from '@/store/loginUserInfo'
 import { cryptUtil } from '@/utils/cryptUtil'
+import { baseURL } from '@/config/index'
 
-const baseURL = 'http://localhost:9090'
 let headerOption: XHeaderOption = {
   'content-type': 'application/json;charset=utf-8'
 }
 
+/**
+ *
+ */
 class BaseRequest {
   /**
    * Post请求
@@ -23,15 +26,23 @@ class BaseRequest {
 
   /**
    *
-   * @param api
-   * @param param
-   * @param option
+   * @param {string} api
+   * @param {TAnyObject} param
+   * @param {XParamOption} option
+   * @returns {Promise<unknown>}
    */
   public put(api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) {
     const url = `${baseURL}${api}`
     return this.commonRequest(url, 'PUT', param, option)
   }
 
+  /**
+   *
+   * @param {string} api
+   * @param {TAnyObject} param
+   * @param {XParamOption} option
+   * @returns {Promise<unknown>}
+   */
   public delete(api: string, param: TAnyObject = {}, option: XParamOption = { isAuth: true }) {
     const url = `${baseURL}${api}`
     return this.commonRequest(url, 'DELETE', param, option)
@@ -49,6 +60,13 @@ class BaseRequest {
     return this.commonRequest(url, 'GET', {}, option)
   }
 
+  /**
+   * Description placeholder
+   * @date 2022/9/13 - 20:38:40
+   *
+   * @private
+   * @returns {*}
+   */
   private getEncryptedAuthText() {
     const requestJsonData = {
       cid: useLoginUserInfo().clientId,
@@ -59,12 +77,30 @@ class BaseRequest {
     return cryptUtil.rsa_encrypt(requestJsonText)
   }
 
+  /**
+   * 描述
+   * @author Author
+   * @date 2022-09-13
+   * @param {any} headerOption:XHeaderOption
+   * @returns {any}
+   */
   private getHeaderAuthOption(headerOption: XHeaderOption) {
     headerOption.authorization = uni.getStorageSync('token')
     headerOption.cert_key = uni.getStorageSync('cert_key')
     return headerOption
   }
 
+  /**
+   * Description placeholder
+   * @date 2022/9/13 - 20:40:56
+   *
+   * @private
+   * @param {string} url
+   * @param {?('GET' | 'POST' | 'PUT' | 'DELETE')} [method]
+   * @param {TAnyObject} [param={}]
+   * @param {XParamOption} [option={isAuth: true}]
+   * @returns {*}
+   */
   private commonRequest(
     url: string,
     method?: 'GET' | 'POST' | 'PUT' | 'DELETE',
@@ -83,7 +119,7 @@ class BaseRequest {
         timeout: 30000,
         header: headerOption,
         success: res => {
-          if (res.statusCode === 200) {
+          if (this.ajaxFilter(res.data) && res.statusCode === 200) {
             this.setAuthInfo(res.header)
             resolve(res.data)
           } else {
@@ -100,6 +136,12 @@ class BaseRequest {
     })
   }
 
+  /**
+   * 描述
+   * @date 2022-09-13
+   * @param {any} header:XHeaderOption
+   * @returns {any}
+   */
   private setAuthInfo(header: XHeaderOption) {
     const storeLoginUserInfo = useLoginUserInfo()
     if (header.authorization) {
@@ -132,6 +174,22 @@ class BaseRequest {
       }
     }
     return newUrl
+  }
+
+  // 验证登录情况
+  ajaxFilter(data: any) {
+    let status = true
+    if (data.code == 401) {
+      status = false
+      Alert('登录状态失效').then(result => {
+        const storeLoginUserInfo = useLoginUserInfo()
+        storeLoginUserInfo.clearAuthInfo()
+        uni.reLaunch({
+          url: '/pages/auth/login/login'
+        })
+      })
+    }
+    return status
   }
 }
 

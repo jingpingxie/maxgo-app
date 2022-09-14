@@ -1,6 +1,7 @@
 import Request from '../request.ts'
 import Module from '../module.ts'
 
+
 const Interface = {
   /**
    * 获取设备类目列表

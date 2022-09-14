@@ -7,3 +7,5 @@ export const baseRouter = {
   LOGIN: '/login',
   NOT_FOUND: '/not-found'
 }
+
+export const baseURL = 'http://localhost:9090'

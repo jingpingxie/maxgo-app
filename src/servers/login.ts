@@ -1,7 +1,6 @@
 import { cryptUtil } from '@/utils/cryptUtil'
 import { useLoginUserInfo } from '@/store/loginUserInfo'
-
-const BASE_URL = 'http://localhost:9090'
+import { baseURL } from '@/config/index'
 
 export class login {
   doLogin(account: string, password: string) {
@@ -24,7 +23,7 @@ export class login {
 
   sendDisposableCertRequest() {
     //获取一次性证书，以便加密请求数据
-    const certRequestUrl = BASE_URL + `/api/v1/passport/disposablecert`
+    const certRequestUrl = baseURL + `/api/v1/passport/disposablecert`
     return new Promise((resolve, reject) => {
       uni.request({
         url: certRequestUrl,
@@ -64,7 +63,7 @@ export class login {
     const encryptedText = cryptUtil.rsa_encrypt(requestJsonText)
     console.log('加密后的文字：' + encryptedText)
 
-    const certRequestUrl = BASE_URL + `/api/v1/user/login`
+    const certRequestUrl = baseURL + `/api/v1/user/login`
     return new Promise((resolve, reject) => {
       uni.request({
         url: certRequestUrl,

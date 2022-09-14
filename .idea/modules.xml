@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Uniapp-Cli-Ts-V3-Template.iml" filepath="$PROJECT_DIR$/.idea/Uniapp-Cli-Ts-V3-Template.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/maxgo-app.iml" filepath="$PROJECT_DIR$/.idea/maxgo-app.iml" />
     </modules>
   </component>
 </project>

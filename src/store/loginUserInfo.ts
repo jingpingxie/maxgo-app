@@ -44,9 +44,19 @@ export const useLoginUserInfo = defineStore('loginUserInfo', {
       this.certKey = certKey
       uni.setStorageSync('cert_key', certKey)
     },
+    /**
+     *
+     * @param {string} publicKey
+     */
     setPublicKey(publicKey: string) {
       this.publicKey = publicKey
       uni.setStorageSync('public_key', publicKey)
+    },
+    clearAuthInfo() {
+      uni.clearStorageSync()
+      this.token = ''
+      this.certKey = ''
+      this.publicKey = ''
     }
   }
 })
